@@ -6,3 +6,4 @@ instructor*
 .vagrant/*
 ansible.cfg
 hosts
+infra-aws.yml
