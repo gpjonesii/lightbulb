@@ -1,0 +1,112 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "VPC: public and private subnets in two availability zones",
+  "Parameters": {
+    "SubnetId": {
+      "Description": "ID of the Subnet into which the instances will be launched",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "UserName":{
+      "Description": "username injected into each instance",
+      "Type": "String",
+      "Default": "lightbulb"
+    },
+    "Password": {
+      "Description": "User Password",
+      "Type": "String",
+      "Default": "lightbulb"
+    },
+    "Keypair": {
+      "Description" : "Amazon EC2 Key Pair",
+      "Type" : "AWS::EC2::KeyPair::KeyName"
+    },
+    "ImageId": {
+      "Description" : "Image Id",
+      "Type" : "AWS::EC2::KeyPair::KeyName"
+    }
+  },
+  "Resources": {
+  "Tower": {
+    "Type": "AWS::EC2::Instance",
+    "Properties": {
+      "Tags": [{
+        "Key": "Name",
+        "Value": {
+          "Ref": "AWS::StackName"
+        }
+      }],
+      "ImageId": {"Ref": "ImageId"},
+      "InstanceType": "m1.small",
+      "KeyName": "Secure",
+      "NetworkInterfaces": [{
+        "AssociatePublicIpAddress": "true",
+        "DeviceIndex": "0",
+        "DeleteOnTermination": "true",
+        "SubnetId": {"Ref": "SubnetId"}
+      }]
+    }
+  },
+  "Node1": {
+    "Type": "AWS::EC2::Instance",
+    "Properties": {
+      "Tags": [{
+        "Key": "Name",
+        "Value": {
+          "Ref": "AWS::StackName"
+        }
+      }],
+      "ImageId": "ami-123456789",
+      "InstanceType": "m1.small",
+      "KeyName": "Secure",
+      "NetworkInterfaces": [{
+        "AssociatePublicIpAddress": "true",
+        "DeviceIndex": "0",
+        "DeleteOnTermination": "true",
+        "SubnetId": "subnet-abcdefgh",
+        "GroupSet": ["sg-a1b2c3d4"]
+      }]
+    }
+  },
+  "Node2": {
+    "Type": "AWS::EC2::Instance",
+    "Properties": {
+      "Tags": [{
+        "Key": "Name",
+        "Value": {
+          "Ref": "AWS::StackName"
+        }
+      }],
+      "ImageId": "ami-123456789",
+      "InstanceType": "m1.small",
+      "KeyName": "Secure",
+      "NetworkInterfaces": [{
+        "AssociatePublicIpAddress": "true",
+        "DeviceIndex": "0",
+        "DeleteOnTermination": "true",
+        "SubnetId": "subnet-abcdefgh",
+      }]
+    }
+  },
+  "Node3": {
+    "Type": "AWS::EC2::Instance",
+    "Properties": {
+      "Tags": [{
+        "Key": "Name",
+        "Value": {
+          "Ref": "AWS::StackName"
+        }
+      }],
+      "ImageId": "ami-123456789",
+      "InstanceType": "m1.small",
+      "KeyName": "Secure",
+      "NetworkInterfaces": [{
+        "AssociatePublicIpAddress": "true",
+        "DeviceIndex": "0",
+        "DeleteOnTermination": "true",
+        "SubnetId": "subnet-abcdefgh",
+      }]
+    }
+  }
+},
+  "Outputs": {}
+}

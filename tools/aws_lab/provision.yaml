@@ -1,0 +1,41 @@
+- name: Create Workshop VPC
+  hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  cloudformation:
+    stack_name: "ansible-lightbulb-{{ workshop_name }}-workshop"
+    state: "present"
+    region: "{{ ec2_region }}"
+    disable_rollback: true
+    template: "files/cfn-lightbulb-lab-vpc.json"
+    template_parameters:
+      WorkShop: "{{ workshop_name }}"
+    tags:
+      WorkShop: "{{ workshop_name }}"
+      InstructorName: "{{ instructor_name }}"
+      InstructorEmail: "{{ instructor_email }}"
+  register: vpc
+
+- name: Create User Lab Stacks
+  hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  cloudformation:
+    stack_name: "{{ workshop_name }}-{{ item.key }}-tower-lab-stack"
+    state: "present"
+    region: "{{ ec2_region }}"
+    disable_rollback: true
+    template: "files/cfn-lightbulb-lab-user-stack.json"
+    template_parameters:
+      VPC: "{{ vpc }}"
+      UserName: "{{ item.key }}"
+      Password: "{{ admin_password }}"
+      Keypair: "{{ ec2_keypair }}"
+    tags:
+      WorkShop: "{{ workshop_name }}"
+      UserName: "{{ item.key }}"
+  debug:
+    msg: "Username: {{ item.key }} Name: {{ item.value.name }} Email: {{ item.value.email }} Stack: {{ workshop_name }}-{{ item.key }}-tower-lab-stack"
+  with_dict: "{{ users }}"
